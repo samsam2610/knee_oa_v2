@@ -1,49 +1,79 @@
+from helper import *
 
-class Gait():
-    def __init__(self, size_max: int, buffer_factor: float):
+class Gait_Event():
+    def __init__(self, size_max: int):
         self.gyro = size_max * [0]
+        self.gyro_data = []
         self.acce = size_max * [0]
+        self.acce_data = []
         self.time = size_max * [0]
-        self.buffer_factor = buffer_factor
-        self.current_toeoff_peak_time = 0
-        self.current_heelstrike_peak_time = 0
+        self.quadriceps = size_max * [0]
+        self.quadriceps_data = []
+        self.hamstring_data = []
+        self.hamstring = size_max * [0]
 
-    def current_data(self, IMU, toeoff_threshold: float, heelstrike_threshold: float):
-        self.gyro = IMU.gyro_sen
-        self.acce = IMU.acce_sen
-        self.time = IMU.time
+        self.gyro_object = peak_finding()
+        self.acce_object = peak_finding()
+
+        self.hamstring_object = peak_finding()
+        self.quadriceps_object = peak_finding()
+
+        self.event_data = []
+
+    def current_imu_data(self, IMU, gyro_threshold: float, acce_threshold: float):
+        self.gyro[:] = IMU.gyro_sen
+        self.acce[:] = IMU.acce_sen
+        self.time[:] = IMU.time
         self.imu = IMU
-        self.toeoff_threshold = toeoff_threshold
-        self.heelstrike_threshold = heelstrike_threshold
+        self.gyro_threshold = gyro_threshold
+        self.acce_threshold = acce_threshold
+
+    def current_emg_data(self, EMG, hamstring_threshold: float, quadriceps_threshold: float):
+        self.hamstring[:] = EMG.hamstring_filtered
+        self.quadriceps[:] = EMG.quadtricep_filtered
+        self.hamstring_threshold = hamstring_threshold
+        self.quadriceps_threshold = quadriceps_threshold
+
+    def get_gyro(self, label=str):
+        self.gyro_object.add(value=self.gyro[len(self.gyro) - 1], time=self.time[len(self.time) - 1])
+        [loca_value, loca_time, loca_sign, loca_diff] = self.gyro_object.check()
+        if loca_time != 0\
+                and abs(loca_value) < abs(self.gyro_threshold) \
+                and loca_diff > 1 \
+                and loca_sign == -1:
+            gyro_instance = [loca_value, loca_time]
+            self.gyro_data.append(gyro_instance)
+            self.event_data.append([loca_value, loca_time, label])
+
+    def get_acce(self, label=str):
+        self.acce_object.add(value=self.acce[len(self.acce) - 1], time=self.time[len(self.time) - 1])
+        [loca_value, loca_time, loca_sign, loca_diff] = self.acce_object.check()
+        if loca_time != 0 \
+                and abs(loca_value) > abs(self.acce_threshold)\
+                and loca_sign == -1:
+            acce_instance = [loca_value, loca_time]
+            self.acce_data.append(acce_instance)
+            self.event_data.append([loca_value, loca_time, label])
+
+    def get_hamstring(self):
+        self.hamstring_object.add(value=self.hamstring[len(self.hamstring) - 1], time=self.time[len(self.time) - 1])
+        [loca_value, loca_time, loca_sign, loca_diff] = self.hamstring_object.check()
+        if loca_time != 0 \
+                and loca_diff > 0.2\
+                and loca_sign == 1:
+            hamstring_instance = [loca_value, loca_time]
+            self.hamstring_data.append(hamstring_instance)
+            self.event_data.append([loca_value, loca_time, 'Hamstring'])
+
+    def get_quadriceps(self):
+        self.quadriceps_object.add(value=self.quadriceps[len(self.quadriceps) - 1], time=self.time[len(self.time) - 1])
+        [loca_value, loca_time, loca_sign, loca_diff] = self.quadriceps_object.check()
+        if loca_time != 0 \
+                and abs(loca_diff) > 0.2 \
+                and loca_sign == 1:
+            quadriceps_instance = [loca_value, loca_time]
+            self.quadriceps_data.append(quadriceps_instance)
+            self.event_data.append([loca_value, loca_time, 'Quadriceps'])
 
 
-    def peak_detect(self, threshold, data, current_peak_time):
-        data_peak = min(data)
-        data_peak_index = data.index(data_peak)
-        data_peak_time = self.time[data_peak_index]
-        buffer_time = self.buffer_factor * data_peak_time
-        if data_peak < threshold:
-            if  (data_peak_time > current_peak_time + buffer_time):
-                current_peak_time = data_peak_time
-            elif current_peak_time == 0:
-                current_peak_time = data_peak_time
-            else:
-                data_peak_index = -1
-        else:
-            data_peak_index = -1
 
-        return [data_peak_index, current_peak_time]
-
-    def __get_event_index(self, threshold_value: float, data, peak_time):
-        [event_index, current_peak_time] = self.peak_detect(threshold_value, data, peak_time)
-        if event_index != -1:
-            event_index = self.time[event_index]
-        return [event_index, current_peak_time]
-
-    def get_toeoff(self):
-        [toeoff_time_index, self.current_toeoff_peak_time] = self.__get_event_index(self.toeoff_threshold, self.gyro, self.current_toeoff_peak_time)
-        return toeoff_time_index
-
-    def get_heelstrike(self):
-        [heelstrike_time_index, self.current_heelstrike_peak_time] = self.__get_event_index(self.heelstrike_threshold, self.acce, self.current_heelstrike_peak_time)
-        return heelstrike_time_index

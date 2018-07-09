@@ -1,5 +1,6 @@
 
 import xlrd
+import csv
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -13,7 +14,7 @@ def read_data(path: str):
         data_temp = value.split(",")
         for index_j, data in enumerate(data_temp):
             try:
-                data_array[index_i, index_j] = float(data)
+                data_array[index_i, index_j] = round(float(data), 2)
             except ValueError:
                 pass
             if (index_j == col_elements - 1):
@@ -36,5 +37,35 @@ def plot_data(data, n: int, time_index: int):
         pass
     return axs
 
+def read_parse_csv(path: str):
+    file = open(path)
+    raw_data = csv.reader(file)
+    data_temp = ''
+    data_final = ''
+    data_full = []
+    time = 0
+    for row in raw_data:
+        data = str(row[2])
+        if 's' in data:
+            data_temp = data
+        elif 'e' in data and 's' in data_temp:
+            data_temp = data_temp + data
+            data_final = data_temp
+            print(data_final)
+            data_temp = ''
+        elif 's' in data_temp and not 'e' in data_temp:
+            data_temp = data_temp + data
+
+        if 's' in data_final and 'e' in data_final:
+            data_elements = data_final.split(',')
+            if data_elements.__len__() == 21:
+                time = time + float(data_elements[-2])
+                data_element = []
+                for index, element in enumerate(data_elements[1:-1]):
+                    data_element.append(float(element))
+                data_element.append(time)
+                data_full.append(data_element)
+
+    return(np.asarray(data_full))
 
 
