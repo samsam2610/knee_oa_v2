@@ -1,4 +1,4 @@
-from filter import *
+from helper.filter import *
 
 class EMG(object):
     def __init__(self, size_max: int):

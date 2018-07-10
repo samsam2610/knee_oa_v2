@@ -1,5 +1,4 @@
-import numpy as np
-from filter import *
+from helper.filter import *
 
 class IMU(object):
     def __init__(self, order: int, size_max: int, special_value: float):
@@ -52,7 +51,6 @@ class IMU(object):
                                                             self.gy_filtered,
                                                             self.gz_filtered)
 
-        return [self.gyro_sen, ax_loc]
 
 
     def get_acc(self):
@@ -60,7 +58,6 @@ class IMU(object):
                                                             self.ay_filtered,
                                                             self.az_filtered)
 
-        return [self.acce_sen, ax_loc]
 
     def __get_sensitive_axis(self, data_x, data_y, data_z):
         ax_sen = [0]

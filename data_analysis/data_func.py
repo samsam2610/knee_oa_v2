@@ -51,7 +51,6 @@ def read_parse_csv(path: str):
         elif 'e' in data and 's' in data_temp:
             data_temp = data_temp + data
             data_final = data_temp
-            print(data_final)
             data_temp = ''
         elif 's' in data_temp and not 'e' in data_temp:
             data_temp = data_temp + data
