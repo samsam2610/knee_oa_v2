@@ -22,7 +22,7 @@ def read_data(path: str):
     return data_array
 
 def plot_data(data, n: int, time_index: int):
-    fig, axs = plt.subplots(nrows=n, ncols=1, sharex=True, figsize = [20,20])
+    fig, axs = plt.subplots(nrows=n, ncols=1, sharex=True, figsize=[20,20])
     x = data[:, time_index]
     for index in range(0, n):
         ax = axs[index]
