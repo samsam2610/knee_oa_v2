@@ -1,9 +1,9 @@
-from helper.filter import *
+from helper import *
 
 class EMG(object):
     def __init__(self, size_max: int):
         self.size_max = size_max
-        [self.hamstring_queue, self.quadtricep_queue] = self.empty_queue(value=0)
+        [self.hamstring_queue, self.quadtricep_queue, _] = empty_queue(size_max=size_max, value=0)
         self.time = [0] * size_max
 
     def delete(self):
@@ -24,9 +24,6 @@ class EMG(object):
     def quadtricep_filter(self, lowcut, highcut, fs, order):
         self.quadtricep_filtered = butter_lowpass_filter(self.quadtricep_queue, highcut, fs, order=order).tolist()
 
-    def empty_queue(self, value: float):
-        data_x = [value] * self.size_max
-        data_y = [value] * self.size_max
-        return [data_x, data_y]
+
 
 

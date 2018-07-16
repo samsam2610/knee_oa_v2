@@ -1,13 +1,13 @@
-from helper.filter import *
+from helper import *
 
 class IMU(object):
     def __init__(self, order: int, size_max: int, special_value: float):
         self._instance = []
         self.order = order
         self.size_max = size_max
-        [self.gx_queue, self.gy_queue, self.gz_queue] = self.empty_queue(value= 0)
-        [self.ax_queue, self.ay_queue, self.az_queue] = self.empty_queue(value= 0)
-        [self.gyro_sen, self.acce_sen, self.time] = self.empty_queue(value= 0)
+        [self.gx_queue, self.gy_queue, self.gz_queue] = empty_queue(size_max=size_max, value=0)
+        [self.ax_queue, self.ay_queue, self.az_queue] = empty_queue(size_max=size_max, value=0)
+        [self.gyro_sen, self.acce_sen, self.time] = empty_queue(size_max=size_max, value=0)
         self.special_value = special_value
 
     def delete(self):
@@ -41,9 +41,9 @@ class IMU(object):
         self.ay_filtered = butter_bandpass_filter(self.ay_queue, lowcut, highcut, fs, order=order).tolist()
         self.az_filtered = butter_bandpass_filter(self.az_queue, lowcut, highcut, fs, order=order).tolist()
 
-
     def test_func(self, input):
-        output = abs(max(input)) + abs(min(input))
+        # output = abs(max(input)) + abs(min(input))
+        output = sum([abs(i) for i in input[:]])
         return output
 
     def get_gyro(self):
@@ -51,13 +51,10 @@ class IMU(object):
                                                             self.gy_filtered,
                                                             self.gz_filtered)
 
-
-
-    def get_acc(self):
+    def get_acce(self):
         [self.acce_sen, ax_loc] = self.__get_sensitive_axis(self.ax_filtered,
                                                             self.ay_filtered,
                                                             self.az_filtered)
-
 
     def __get_sensitive_axis(self, data_x, data_y, data_z):
         ax_sen = [0]
@@ -65,13 +62,13 @@ class IMU(object):
         y_max = self.test_func(data_y)
         z_max = self.test_func(data_z)
 
-        if (x_max > y_max and x_max > z_max):
+        if x_max > y_max and x_max > z_max:
             ax_sen = data_x
             ax_loc = 1
-        elif (y_max > x_max and y_max > z_max):
+        elif y_max > x_max and y_max > z_max:
             ax_sen = data_y
             ax_loc = 2
-        elif (z_max > x_max and z_max > y_max):
+        elif z_max > x_max and z_max > y_max:
             ax_sen = data_z
             ax_loc = 3
         else:
@@ -80,10 +77,5 @@ class IMU(object):
         return [ax_sen, ax_loc]
 
 
-    def empty_queue(self, value: float):
-        data_x = [value] * self.size_max
-        data_y = [value] * self.size_max
-        data_z = [value] * self.size_max
-        return [data_x, data_y, data_z]
 
 

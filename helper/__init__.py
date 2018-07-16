@@ -1,3 +1,4 @@
 from .peak_finding import peak_finding
-from .threshold import threshold
+from .threshold import Threshold
 from .filter import *
+from .ultilities import *
