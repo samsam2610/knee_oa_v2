@@ -2,11 +2,11 @@ from data_analysis import *
 from data_form import *
 import os
 
-original_path = '/Users/Sam/Dropbox/walking emg data/CCNY_DATA'
+original_path = '/Users/Sam/Dropbox/Python/KneeOA_v_2/data'
 list_of_files = os.listdir(original_path)
 csv_files = []
 for index, file in enumerate(list_of_files):
-    if file.endswith('.txt'):
+    if file.endswith('.csv'):
         csv_files.append(file)
 
 for index, file in enumerate(csv_files):
@@ -15,7 +15,7 @@ for index, file in enumerate(csv_files):
     # path = '/Users/Sam/Dropbox/Python/KneeOA_v_2/data/File Jul 06, 3 08 23 PM run 12.csv'
     print(path)
     data = read_parse_csv(path)
-    # np.savetxt(csv_files[index] + '.csv', data, delimiter=',')
+
 
     fs = 25
     angle_index = 0
@@ -25,8 +25,8 @@ for index, file in enumerate(csv_files):
 
     # data = data[0: 1200, :]
 
-    for column in range(angle_index, angle_index+4):
-        data[:, column] = [np.cos(i/114.5916) for i in data[:, column]]
+    # for column in range(angle_index, angle_index+4):
+    #     data[:, column] = [np.cos(i/114.5916) for i in data[:, column]]
 
     # w = data[:, angle_index]
     # x = data[:, angle_index + 1]
@@ -76,7 +76,9 @@ for index, file in enumerate(csv_files):
               gyro_index=gyro_index,
               emg_index=emg_index)
 
-    print("Hello")
-    axs = plot_data(data, 18, 19)
-    # save_path = original_path + '/%s.png' % list_of_files[index]
-    # plt.savefig(save_path)
+
+    # axs = plot_data(data, 18, 19)
+    file_name = file[:-4] + '_gait_event'
+    save_path = original_path + '/%s.png' % file[:-4]
+    np.savetxt(file_name + '.csv', np.asarray(gait_event.event_data), delimiter=',', fmt="%s")
+    plt.savefig(save_path)

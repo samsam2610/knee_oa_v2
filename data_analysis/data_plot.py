@@ -1,6 +1,7 @@
 from data_analysis.data_func import *
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import hilbert
 
 from helper import *
 
@@ -40,6 +41,20 @@ def data_plot(gait_event, data,
                                                   quadtricep_filter_param.high_cut,
                                                   quadtricep_filter_param.fs,
                                                   order=quadtricep_filter_param.order)
+
+    # for column in [emg_index+1]:
+    #     x = data[:, column]
+    #     data[:, column] = butter_highpass_filter(x,
+    #                                             cutOff=12,
+    #                                             fs=25,
+    #                                             order=6)
+    #
+    # for column in [emg_index+1]:
+    #     x = data[:, column]
+    #     data[:, column] = abs(hilbert(butter_highpass_filter(x,
+    #                                             cutOff=5,
+    #                                             fs=25,
+    #                                             order=6)))
 
     axs = plot_data(data, 18, 19)
 
@@ -104,7 +119,7 @@ def data_plot(gait_event, data,
             ax.axvline(x=quadriceps_contraction[i], color='b')
 
 
-    plt.show()
+    # plt.show()
     print("hello")
 
 
