@@ -1,0 +1,20 @@
+<scheme name="_@user_Default" version="142" parent_scheme="Default">
+  <metaInfo>
+    <property name="created">2019-03-14T12:16:35</property>
+    <property name="ide">Python</property>
+    <property name="ideVersion">2018.3.5.0.0</property>
+    <property name="modified">2019-03-14T12:32:50</property>
+    <property name="originalScheme">Default</property>
+  </metaInfo>
+  <attributes>
+    <option name="CONSOLE_USER_INPUT">
+      <value>
+        <option name="FOREGROUND" value="7f00" />
+        <option name="FONT_TYPE" value="2" />
+      </value>
+    </option>
+    <option name="TEXT">
+      <value />
+    </option>
+  </attributes>
+</scheme>
